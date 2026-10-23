@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tiendapos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tiendapos}
+      POSTGRES_USER: ${POSTGRES_USER:-tiendapos_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env de la raíz}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - tiendapos_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tiendapos_app} -d ${POSTGRES_DB:-tiendapos}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  tiendapos_pgdata:
